@@ -1,0 +1,137 @@
+import {
+    Creator as PsetCreator,
+    Updater as PsetUpdater,
+    CreatorInput,
+    CreatorOutput,
+    Finalizer as PsetFinalizer,
+    Extractor as PsetExtractor,
+} from "liquidjs-lib";
+import { Transaction } from 'liquidjs-lib/src/transaction';
+import * as bscript from 'liquidjs-lib/src/script';
+import * as NETWORKS from 'liquidjs-lib/src/networks';
+import { ECPair } from './ecc';
+import { createPayment, } from './utils';
+import { address, bip341 } from 'liquidjs-lib';
+import secp256k1 from '@vulpemventures/secp256k1-zkp';
+
+const OPS = bscript.OPS;
+const { BIP341Factory } = bip341;
+const { testnet } = NETWORKS;
+const lbtc = testnet.assetHash;
+
+const TXID = "a2e253db3d731226dab09255dd60a0d9582bd668f6bdc45a4fb19d776ac9a4d6";
+const VOUT = 0;
+const TXHEX = "02000000010132d230b6be6cba8295e678494759a9eb285d4dde3c05d1cf561bfed60939fe820100000000ffffffff0301499a818545f6bae39fc03b637f2a4e1e64e590cac1bc3a6f6d71aa4443654c140100000000000007d000225120bd71b938db2fd3ebf1746eb936bc3e0709c849cdfce6a0c896a958af8c803d150a5357e796d07b557a06a9999754d8982150df2e919a6df43789d6a6cc63ebd7d808c7b5e70c48a1aac3b0a9bfa0439a78e4c2e41fbeba7a7f36f20ac6a4dfe46d10036a31cdd9923757556b632b6b860c923d753981053a52428e1415b621fe8e98f9160014a233e8bd7b8cc22a8455abed94fd757b130227e101499a818545f6bae39fc03b637f2a4e1e64e590cac1bc3a6f6d71aa4443654c1401000000000000010e00000000000000000247304402206502f0fc5558c355dad6dd7c79a10a1e90035cb6d0ab74b82b4aaa6fe7b6e71102203d3808ec5c6c65027c51eacf5e523769dbab344415b7713968bef818941f2b160121028da1f9e6ba493bb571fe24bdd01f740467d4de5566388129c5a9b2fe9257a3b600000043010001c50a1a23c86d70f8118c2868f99f235ea907142911c4d7860d5a74a6eb22422e5708d4e64fca9dad152e92a24ecf56b2976d6d8a5d3824e0a576248e57024407fd4e10603300000000000000017e6f4a00fd9b494a80697d62f8eface1a82a394b13807ea6184556b4423a596444d9c69d3483bbb876196b187aecfec1ddbcda9ea1ab1eb3eb7f070b72f9843ff8070d5e7557b8c02435092c5f5d1f48c9ae933878f2afbf0c60f8819b18a973768654c463e4663dc6c8ee6d4830a78f9e8f5b9e6faa0c117630d24b27e6f604e8aa09650292d0fdf219ac3e8996c7ebf6217abdb31a62e7bee8025ef506ff6adae859b294a64081c3d082c1d5968e413ff7e644ded86bfc17d2381932e0f6be763ad1b1654790f1893a2799fe7e7d76307a5a36f3080a9ce57075c6e45cba83f85ea781bf79b9b7b22405ac9ad9bda9dcc3483876aaab709f1d44a30e769d6536cc53902df206a7be037394b65cbe2444f0bec75e55cb0de178e593d1829afcf057aab039c54aa1baafd00766259f8bc7af2826ca8b46f9f994eddaa8dd03519765bbf9ba5681542fb7e8e4873b8dcd1c8298b05854e4c832a5a1f61d65aaef056d21202342c54f69126b1c0c8e04d9a2ef1591f96d8cb2d3e91dada06dd27c1efc81bce8baab46c33ad6aa61fb0e7dc36c973c267a01aac7de7bcc9ee49f60bbb76cfe5ca0694a4017a6105f37a3d17d47421046c3b368d63257158ccbbdb55c19053d303e24031fe1073a785421aee92a718abaf14dcdcd00908cde1d0f24da09784f5d78c083500be32ba0a6921709eb58b4723d0b93e870f666605f48c2498487633f6262be9f7c3f66cdfb9e6ff6616a3127c4b0b0e166461aa08b6f050fc9ae1d14e2f171725797e140ea8fadd5df2e20b3fffd995fe7dbc73ef765c1cddddf3aced10207297dfb3f56fc631eef077abced64b967f8072a40e2ee3318cd0be4b49808910214217b6521c274cb71c56ed32cc7174c4c41756ce97c809a29de5661265581a87da3881ddd025a1a0e0c670319aca7796d6534821839732a0caf5e6ae7b3c21cc1e5e5abcaff1589bc5e33095cece26f09a7039cdd8ad59ad659a0c7e9cddb14561f693f2afad6c2ae04daed7ef294c5d7e5122b5d3f68b2f5e0d00545e0656e37aadc6879bee4ddd5dab7afa7b4ca6ed90255d0355d05a233af26bc375122a2a2edd425a64f87d19a891683c6753874e1390bfbec76fb306cb311e4b1efa114ab77d58ce2f87a2e6b0d62af341da52e40d5375755dd105cb3537ac33b644536df319968323919b1f8467c26c1d5351243b555deea3ce5dbd001f022d5353d45e8bc2869a9bf7a4b1ce5d9c4d8cab240e9bc85990cc3b2b648a2f20f7e497e15c0401ff8c38080ef14c6df205fd6b4f1e3c1d0012894aa326def85efa719546eccefb3bdbf48974ad0d11dd1f8e110a62e883ab8d802e162ff12e23fad4aa96e0fba7734b2ff41a576809069a42a029612d00f09862f701f50ee01c3b2f9bc2a6fd8efe59f82f6be88f5c4cfbd8131048391c17650b00d32f55bb97378d81917c187a582cbb04dabcb198386bc27e9de0a4f560ec9cc77f2dab219757f987c713ee7955c9b6de6d39475e1d8e4aeeeedaa8b4657d6b921c053653ec7bd58d1fd0a5a026b4db6b492437431c08858fa0b2ca8f112ee787a1a25f3d6c333861422bd4be91411d3caa6ca37de75b16078361ed1c177dfd9d480cf536a799506c689e1a7f5c3911c7357235b67d8a3f79d304aa508923d0ada85f45015c4b7035ef5b4ea4112d4594192a7d5389655b4af434f1048010b694f6f520188ad9e6440047cf1eca2aa066b722967d43242b42b63e52520138169c553d3e7e44b4fb109199ea577f6956e115af8eb14cd842b0a3e7d9f4e00cbe10bdf6867730d46f372bf7bcc1a5cae2dfd96d1a1f5b59ad816e7f2c332f7f48a41f8957837874f8a9c2870a84fd4f7bb59b7b790ad0e59b2c4c98d1e98183a4040429df96c7069f5bd2a80f3f28ac61b30565ac8e352de9e3e1dbbf773077f4b9dca9b5719a87bb948f528ec85d2c35baf553138eb2cfd2fee296059f7d3f0c1e3cb9cba31998c2a07e62da9e308e60893c19aca28fd3ce3bb42f8f767f23e4066b95213f06a62d6d5d9e11e52fdeb8ab3318d7bb6c79b554a07415232eca9abe7e16deaf9b40c0f7f21afb3cca6dc5f9ea9d66b3741af8a3f72a4db9f5508c604bf9847f207b4016a4dba97f97e7e34ba71ece0008725075e3b70d40a36bf93d7a610eb3810d6d84fb0f2b47721c0e830dc9b7f87404b93e8a775d90afbaaedc7dbc2195fbb2b3133e715169b733c95e50d9c1fa1cd41f15319b0451d6004e1ed684301cf47940c0962fcadccf73f8fc8b0a3c328d63773df641cccf1a095b0c0e440f828d243f5c543ec6e759c7efafa892b156dbe7f33c5568d50cb42d8b1b6b7d3fa65ea8efec31ad4e4d0ba2c2edb4263bd0c075eb06025131e4da866156beec6590201be64615e2df9cc7b5d9b6098315a509c8124623063efe25cd98b30d10d50001350fc0dcf72759932b5ff4d9cee8c2d17a2fba5d9e7e20639ac99ffff1137832b8aa3b7f329576965f0f2bbe7e6825add8fce2c6a7a41adffc81e41b44ec98894ccac47b5867f1964eb41b6222a704e23b52b81b18bfe117bd11332c38552895e61ccf971b9b9adfbd7ffeb2a80d95644f816505da555e388149064f2a0a3e9cc5b78c2132160f732074e745147ba8a4b049efb5335beb7d83e4f6387cf67e920492c97264030429f22d936537d84a4c7d3aa54d0d7ae41f6e88b890107a811d59702ab575f8cf79d4ad4c3592f5afbc9831160353c6be028679f52cdd60ae0e2b34f76ea95f6665d5e7ba6348a7f4b111536940e1263e731e4b12fc0f9367f05338fac0cbe30676b16d387ba65be1908e243f5e4aa8005f83fc5bfab30359b06994d4d5a8fa0d2ee09d820b6834509047d35269e3596a043ee75deb7ca616b202bb62ae250f6ad14acac6126f514da2f575f410ff4af80d601ae9ab40481a481b92952b734a44b3d41d2d4cb5dde1f9d0b8dece32cabfcb4e95fdd6e1e8121eee4142ad276bb36f4a43732f06a1582470411b4b0bb651247af22d7f040af5685aeb6b40ee92d939e2877f68f9ba55f4f37d1ef5283564911dfeb8fe37f9d36a6d3123d39d1c9c1889c72dd3ac3a23dd74827e152681b4fca8f04fd29011cb6e239fa3e1aac31a3c3d105a20416300c0f0ef05e1f0568e3025e2df47ecef4c3954330008d3eef23af4d6cc045d3348c5fb2bcd3370edf5ca8309aee8b3bedc89e24878d3b1bf29a720fb775a4c390dcec89cd0b5689316a022778844dc950aa2c5dfa2fd03a617fe1ec7b4a4fc94ea668fbf4b24a928508230643f315b7040b83c81afc33c8e1499db9ce649715ea708007b8940b5ea5150047ef39902ccc2c5e527fc20e9090128a5f4961e3f0aee723d47af56ac72dd3898b6d776fec483b140dd517c0968adb02bcfc44777498abd17737dc239c3d1c06de86a42d0df99d560c4f4b5ff54f64a7ac9892b0a297f530b902bfb9fee56a7f2bfb7ba7299f30659ab979a8e637b83dfdd881d331cae03bbfb92f0acedbf1745fe5d61308dd5f8e96089cdd5fa81267a71cbb3ff93a59fc956d5ba734d60092f01016b965337cc7bc2c2803e0e70f3e1ec3658bca7118a57e4865aec145c078ee8184c478bac4e3262600d2c38c3205989977872422462965002173591e6da2570c0a050f982aae9388db75e695faece5a42437c86b2472f7e1f917ae2ffacfa4b2c76647b0463719fd6f31827935c8c5ad2245bbf6e345a9c768cec265663f50ba4e2ae72c52f72c1fda3d0c37bfa68223511511f5cc95b0a611f603ee018b94838387d64838688b53d54bf439b361f1d2596a9b3fe596ff3e2447ec0f1dc63d9115667776904f88d26dd5200d9c2836857863ad9b57589ec3a8260740a3fe7613a09ceb54178d415a29191764ee982f3a04ad6949d16670f7e1a626ec39a45bde057d0a6a71471b70d00d13313a141201ba7d715ca62c0b8db72e318b8de3b81a0d26ae9e179c4eb971c22f56cb0c7e86c58e6893ef7a6af8c7cb448418f2483f83d175788139ebbd3b3eb24f41331621dc339a1ae713de702cb5d094075103d510a93900329c7e506b9cdd1f7575892d7afee9f98c6bd4a0cf1944fe67517fd92bf9cf201b298cdd01e5770508dcf8809f29b0c8483814145ef68c930f7caeba994d4e035a329546cb0f9a8a98ae13fdf3c5a79056905daac40030b3de9b5912d007b61d37096f540e3df93205fa86302ce49188ba09d45c564bd7aee58ebd9b2ccdc853c3f2d3bd2579e08aaf4f5f70327120596793bf70d87dba5d0458d53381859e6d95d10f26136e5c74ae8c839d08e381de10e7d39d0b23ef95947f20a205ede3f2fdc03e2db0deb889cda057ff15e2114135b42b66d00e4f7ff704b33535fe53669bf1c59337794371c742a20b212010d54a4723e07de7e5986e133010629afa319cb86bafd27ca617702f3cf7c33c6f715f4bc8714e88c67eca6d786bfad048c17c392be85ac4df72bd69d33619174e451d493f0df15a9a179d552f80bc85046b5b38a3287cbae6d059bdffc6da80864783bfd36d01f63ccc40079aed2a2cbe0874808a9ca210cc984c3f89074d7e03a4bfda18c49705a6ffab28d78c3ad0476059e9c85ccac566db1923f4348f0cd3f91e415c9c523ed3c0e9b1e971a59d160ad7bc3b47ff47cc67bbede426705695958b5b41efed1417f85964e1e0fa42c3e83854c3894817110139f75aaf7cae6011ba67f9e1ff68c89f3b402a7df7c240df0b5533cafe9d881ede8490320e48e95be8447181cbd20815cda197b4b02ecd9b25fcea2651588c66b2033a47f257dd7722a7ed9909aa360d940a0b27a12aa961264ea781959689ee8cd45d649c60f3f9eb4f5394cbd9e185cb26d564113a8cd6309b16990a5902fdf993bdb177c6bf24da878a204b7a3333176a3c0cca77d1a1b4bd5d05c9579fbc31e6e09582f056481c1988de5fffbe995a8145b87ecf5e18a02e4d394b1764dc333ff1fa82f4621e0db4960af7e09eb0578814aa34a87f10ec5bc5dc8bae063b4ffb95b683d7b36202d6d2ae9396378f3baebb9cf781f595a9263c3be9c682eeb86f9b0a5e2a8d6b257e6f4cd230b5f8b6c6839cfbcacd191ef26e95188807d598f54ab02ee2796c749a67893cc73680806a704ef2b5a5dc9ea4c0d09b2043ce8a086fb62273648bc64994ba7b8d84245621688da997be8e42a3fec8e6b97f15cfacdf0e48d043444a7e97fe32f8d0b3a395175524f6973a24127f54848f47b07873f85e31989822e4154d3dc73ae0807dc3043924b8ac465f61134b2edaea5f0f43b3bb9c79a261727d4c9341c6934fdcd7829b450036d830a7f6fff5b39e11c83c214ddfb5770a533fc5144625f8e80b84ee39fc3f41faacb3773febc05a8773101707ade4735710126df65dcbd63f11bfd6ba8fc4e0dd8fd796d6a74e55d813358fef2f0f7b055c59242f0e07e681e76972178abbf28604a44c72cb173611d70cf9da40ac316b392def87ae789fa05476f5bc0a18e2fa7eb1877250de3ab7960184158edd7c9c30563186e852a117025b483bfa18a448a8b811d098d9894aaf67fdf62f9c65a67fdf58cfeca9021cc4ef897cb5f9237f68c3e187d02165f8f020e3949c42a92c49e30b63716eae2a65181c8bba0ab4af1be81b4392d115760a97c04570b8a925dad54fc99579bbc1e7a6cbfee79d9da6e5d48825270efadd0b45cb6a5023ad1e95fdfbed1bfe94048113deac07acd9ea24e8074e510a4683a595dc39969a80fe9da213ef62eed918f544432ab0651425ed040b25961fbd268c8a637386471aab2c28dcfa1882fa36d7c83ee82c5e6e5f77bac29d83dbf6473d3f14e78a65798d09c916a0a991b937df83fe6ad1325404be3e0000";
+const alice = ECPair.fromWIF('cScfkGjbzzoeewVWmU2hYPUHeVGJRDdFt7WhmrVVGkxpmPP8BHWe', testnet);
+const bob = ECPair.fromWIF('cMkopUXKWsEzAjfa1zApksGRwjVpJRB3831qM9W4gKZsLwjHXA9x', testnet);
+const bobKeys: any[] = [bob];
+
+
+main();
+
+async function main() {
+    const hex = await scriptpathwithoutsig();
+    console.log(`hex: ${hex}`);
+}
+
+async function scriptpathwithoutsig() : Promise<String> {
+    const bobPay = createPayment('p2wpkh', bobKeys, testnet, false);
+    const bobScript = bscript.compile([
+        OPS.OP_0,
+        OPS.OP_INSPECTINPUTSCRIPTPUBKEY,
+        OPS.OP_1,
+        OPS.OP_EQUALVERIFY,
+        OPS.OP_0,
+        OPS.OP_INSPECTOUTPUTSCRIPTPUBKEY,
+        OPS.OP_1,
+        OPS.OP_EQUALVERIFY,
+        OPS.OP_EQUAL,
+        OPS.OP_0,
+        OPS.OP_INSPECTOUTPUTVALUE,
+        OPS.OP_1,
+        OPS.OP_EQUALVERIFY,
+        Buffer.from("e803", "hex"),//<1000> LE
+        OPS.OP_SCRIPTNUMTOLE64,
+        OPS.OP_GREATERTHANOREQUAL64,
+        OPS.OP_VERIFY,
+    ]);
+
+    console.log(`bobScript: ${bobScript.toString('hex')}`)
+
+    const zkpLib = await secp256k1();
+    const { ecc: ecclib } = zkpLib;
+
+    // in this exemple, alice is the internal key (can spend via keypath spend)
+    // however, the script tree allows bob to spend the coin with a simple p2pkh
+    const leaves: bip341.TaprootLeaf[] = [
+        {
+        scriptHex: bobScript.toString('hex'),
+        }
+    ];
+
+    const hashTree = bip341.toHashTree(leaves);
+    const output = BIP341Factory(ecclib).taprootOutputScript(
+        alice.publicKey,
+        hashTree,
+    );
+    const taprootAddress = address.fromOutputScript(output, testnet); // UNCONFIDENTIAL
+
+    console.log(`alice pubkey ${alice.publicKey.toString("hex")}`);
+    console.log(`taprootAddress ${taprootAddress}`);
+
+    const utxo = {
+        txid: TXID,
+        vout: VOUT,
+    };
+    const txhex = TXHEX;
+    const prevoutTx = Transaction.fromHex(txhex);
+
+    const FEES = 500;
+    const sendAmount = 1500;
+
+    const inputs = [
+        new CreatorInput(utxo.txid, utxo.vout),
+    ];
+
+    const outputs = [
+        new CreatorOutput(
+        lbtc,
+        sendAmount,
+        address.toOutputScript(taprootAddress),
+        bobPay.payment.blindkey,
+        0,
+        ),
+        new CreatorOutput(lbtc, FEES),
+    ];
+
+    const pset = PsetCreator.newPset({
+        inputs,
+        outputs,
+    });
+
+    const updater = new PsetUpdater(pset);
+    updater.addInWitnessUtxo(0, prevoutTx.outs[utxo.vout]);
+    updater.addInSighashType(0, Transaction.SIGHASH_ALL);
+
+    const leafHash = bip341.tapLeafHash(leaves[0]);
+    const pathToBobLeaf = bip341.findScriptPath(hashTree, leafHash);
+    const [script, controlBlock] = BIP341Factory(ecclib).taprootSignScriptStack(
+        alice.publicKey,
+        leaves[0],
+        hashTree.hash,
+        pathToBobLeaf,
+    );
+
+    updater.addInTapLeafScript(0, {
+        controlBlock,
+        leafVersion: bip341.LEAF_VERSION_TAPSCRIPT,
+        script,
+    });
+
+    const finalizer = new PsetFinalizer(pset);
+    finalizer.finalize();
+    const tx = PsetExtractor.extract(pset);
+    const hex = tx.toHex();
+
+    return hex;
+}

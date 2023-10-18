@@ -1,0 +1,22 @@
+{
+  "name": "sample-covenants-for-liquid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc -p ./tsconfig.json"
+  },
+  "dependencies": {
+    "liquidjs-lib": "^6.0.2-liquid.30",
+    "ecpair": "^2.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "@vulpemventures/secp256k1-zkp": "^3.1.0",
+    "tiny-secp256k1": "^2.2.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
